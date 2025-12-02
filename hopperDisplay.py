@@ -22,6 +22,29 @@ def knight_calc(R, C, Gr, Gc, Lr, Lc):
     if (R == 3 and C == 3 and (Gr, Gc) != (2, 2) and (Lr, Lc) == (2, 2)):
         return "impossible"
     
+    #edge cases:
+    if (
+        i == 1 and
+        j == 1 and
+        (Gr in (1, R) and Gc in (1, C)) and
+        (Lr in (2, R-1) and Lc in (2, C-1))
+    ):
+        return 4
+    if (
+        i == 1 and
+        j == 1 and
+        (Gr in (2, R-1) and Gc in (2, C-1)) and
+        (Lr in (1, R) and Lc in (1, C))
+    ):
+        return 4
+
+    # if (i == 1 and j == 1):
+    #     if (Gr == 1 and Gc == 1 and Lr == 2 and Lc == 2):
+    #         return 4
+    # if (i == 1 and j == 1):
+    #     if (Gr == 2 and Gc == 2 and Lr == 1 and Lc == 1):
+    #         return 4
+
     if (i + j == 1):
         return 3
     if (i == j == 2):
@@ -66,7 +89,7 @@ def show_side_by_side(R, C, Gr, Gc):
     fig, axs = plt.subplots(1, 2, figsize=(C/1.5, R/2))
 
     for ax, title, getter in [
-        (axs[0], "Your calc()", lambda r,c: knight_calc(R,C,Gr,Gc,r,c)),
+        (axs[0], "calc()", lambda r,c: knight_calc(R,C,Gr,Gc,r,c)),
         (axs[1], "BFS true distance", lambda r,c: bfs[r][c] if bfs[r][c] is not None else "impossible")
     ]:
         ax.set_xticks(range(C+1))
@@ -99,13 +122,59 @@ def show_side_by_side(R, C, Gr, Gc):
     plt.tight_layout()
     plt.show()
 
+def print_mistakes(R, C, Gr, Gc):
+    bfs = bfs_dist(R, C, Gr, Gc)
+
+    mistakes = []
+
+    for r in range(1, R+1):
+        for c in range(1, C+1):
+            calc_val = knight_calc(R, C, Gr, Gc, r, c)
+            bfs_val = bfs[r][c]
+
+            mismatch = False
+            if calc_val == "impossible" and bfs_val is None:
+                mismatch = False
+            elif calc_val == "impossible" and bfs_val is not None:
+                mismatch = True
+            elif calc_val != "impossible" and bfs_val is None:
+                mismatch = True
+            elif isinstance(calc_val, int) and isinstance(bfs_val, int) and calc_val != bfs_val:
+                mismatch = True
+
+            if mismatch:
+                mistakes.append((r, c, calc_val, bfs_val))
+
+   
+    if mistakes:
+        print(f"\n=== Mistakes for board {R}×{C} from start ({Gr}, {Gc}) ===")
+        for (r, c, calc_val, bfs_val) in mistakes:
+            print(f"Cell ({r},{c}): calc={calc_val}, bfs={bfs_val}")
+
+
 #failure cases
-#show_side_by_side(12, 12, 1, 1)
 #show_side_by_side(3, 4, 1, 1)
-#show_side_by_side(4, 4, 1, 1)
-#show_side_by_side(7, 7, 1, 1)
+#show_side_by_side(3, 4, 2, 1)
+#show_side_by_side(3, 4, 2, 2)
+#show_side_by_side(4, 10, 1, 1)
+
+#old:
+#show_side_by_side(4, 4, 2, 2)
 #any n by n board but only one square off
+#show_side_by_side(10, 10, 10, 10)
 
+#show_side_by_side(4, 10, 1, 1)
 
+# print_mistakes(12, 12, 1, 1)
+# print_mistakes(3, 4, 1, 1)
+# print_mistakes(4, 4, 1, 1)
+# print_mistakes(7, 7, 1, 1)
+# print_mistakes(4, 4, 2, 2)
+# print_mistakes(3, 4, 2, 1)
+#print_mistakes(3, 4, 2, 2)
 
-#show_calc_board(3, 50, 1, 1)
+# x = 25
+# y = 25
+# for Gr in range(1, x+1):
+#     for Gc in range(1, y+1):
+#         print_mistakes(x, y, Gr, Gc)
