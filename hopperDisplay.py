@@ -21,8 +21,8 @@ def knight_calc(R, C, Gr, Gc, Lr, Lc):
         return "impossible"
     if (R == 3 and C == 3 and (Gr, Gc) != (2, 2) and (Lr, Lc) == (2, 2)):
         return "impossible"
-    
-    #edge cases:
+
+    #corner diagonal edge cases
     if (
         i == 1 and
         j == 1 and
@@ -38,12 +38,46 @@ def knight_calc(R, C, Gr, Gc, Lr, Lc):
     ):
         return 4
 
-    # if (i == 1 and j == 1):
-    #     if (Gr == 1 and Gc == 1 and Lr == 2 and Lc == 2):
-    #         return 4
-    # if (i == 1 and j == 1):
-    #     if (Gr == 2 and Gc == 2 and Lr == 1 and Lc == 1):
-    #         return 4
+    #4xN and Nx4 corner to corner edge cases:
+    if (
+        i == 3 and
+        j == 0 and
+        R == 4 and
+        (Gr in (1, R) and Gc in (1, C)) and
+        (Lr in (1, R) and Lc in (1, C))
+    ):
+        return 5
+    
+    if (
+        i == 0 and
+        j == 3 and
+        C == 4 and
+        (Gr in (1, R) and Gc in (1, C)) and
+        (Lr in (1, R) and Lc in (1, C))
+    ):
+        return 5
+
+    #3xN and Nx3 2 from the start edge cases:
+    if (
+        i == 0 and
+        j == 2 and
+        R == 3 and
+        Gr == 2
+    ):
+        return 4
+    if (
+        i == 2 and
+        j == 0 and
+        C == 3 and
+        Gc == 2
+    ):
+        return 4
+    #3x4 and 4x3 center start case
+    if (
+        ((R, C) == (3, 4) and {(Gr, Gc), (Lr, Lc)} == {(2, 2), (2, 3)}) or
+        ((R, C) == (4, 3) and {(Gr, Gc), (Lr, Lc)} == {(2, 2), (3, 2)})
+    ): 
+        return 5
 
     if (i + j == 1):
         return 3
@@ -153,17 +187,20 @@ def print_mistakes(R, C, Gr, Gc):
 
 
 #failure cases
-#show_side_by_side(3, 4, 1, 1)
-#show_side_by_side(3, 4, 2, 1)
-#show_side_by_side(3, 4, 2, 2)
-#show_side_by_side(4, 10, 1, 1)
+
+
+
 
 #old:
 #show_side_by_side(4, 4, 2, 2)
 #any n by n board but only one square off
 #show_side_by_side(10, 10, 10, 10)
-
-#show_side_by_side(4, 10, 1, 1)
+#show_side_by_side(4, 4, 1, 1)
+#show_side_by_side(3, 4, 1, 1)
+#show_side_by_side(3, 10, 2, 4)
+#show_side_by_side(3, 15, 2, 8)
+#show_side_by_side(3, 4, 2, 1)
+#show_side_by_side(3, 4, 2, 2)
 
 # print_mistakes(12, 12, 1, 1)
 # print_mistakes(3, 4, 1, 1)
@@ -173,8 +210,17 @@ def print_mistakes(R, C, Gr, Gc):
 # print_mistakes(3, 4, 2, 1)
 #print_mistakes(3, 4, 2, 2)
 
-# x = 25
-# y = 25
+# x = 3
+# y = 3
 # for Gr in range(1, x+1):
 #     for Gc in range(1, y+1):
 #         print_mistakes(x, y, Gr, Gc)
+
+maxR = 15
+maxC = 15
+for R in range(1, maxR+1):
+    for C in range(1, maxC+1):
+        for Gr in range(1, R+1):
+            for Gc in range(1, C+1):
+                print_mistakes(R, C, Gr, Gc)
+
